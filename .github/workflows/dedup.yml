@@ -1,0 +1,33 @@
+name: 'Smart Duplicate Detection'
+
+on:
+    issues:
+        types: [opened]
+
+permissions:
+    contents: read
+    issues: write
+    models: read # Required for GitHub Models (LLM)
+
+jobs:
+    triage:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v4
+              with:
+                  python-version: '3.10'
+
+            - name: Install Dependencies
+              run: pip install sentence-transformers numpy openai requests
+
+            - name: Run Hybrid Deduplication
+              env:
+                  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  # This points the OpenAI client to GitHub's free model gateway
+                  OPENAI_BASE_URL: 'https://models.inference.ai.azure.com'
+                  OPENAI_API_KEY: ${{ secrets.GITHUB_TOKEN }}
+              run: python scripts/deduplicate.py
