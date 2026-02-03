@@ -62,10 +62,11 @@ def semantic_search(new_issue_text, existing_issues):
     # Cosine similarity
     cosine_scores = util.cos_sim(new_embedding, existing_embeddings)[0]
     
-    # Filter matches with similarity > 0.6
+    # Filter matches with similarity > 0.5 (Lowered from 0.6)
     matches = []
     for idx, score in enumerate(cosine_scores):
-        if score > 0.6:
+        print(f"DEBUG: Comparing with #{existing_issues[idx]['number']} - Score: {score:.4f}")
+        if score > 0.5:
             matches.append({
                 "issue": existing_issues[idx],
                 "score": float(score)
